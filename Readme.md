@@ -115,6 +115,10 @@ func AcceptJoinRequest(botApi *gapBotApi.BotAPI, callback *gapBotApi.CallbackQue
 	return botApi.Send(msg)
 }
 ```
+
+### Important Note for Integration
+To use this package, you need to ensure that the bot callback body format is set to JSON. This change is necessary for proper functionality of the package. Please contact the Gap Messenger support team to request this update.
+
 ### License
 
 This project is licensed under the MIT License. This means you are free to use, modify, distribute, and incorporate this project in your own software, even for commercial purposes, as long as you include the original copyright notice and this license in any substantial portions of the software.

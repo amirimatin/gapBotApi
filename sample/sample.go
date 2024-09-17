@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	api, err := gapBotApi.NewBotAPI("7e1e2fe810ef85e8489d5772fa297028879be1e674b4656e63951ffa7c0759da")
+	api, err := gapBotApi.NewBotAPI("your_bot_api_token_here")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -45,14 +45,14 @@ func main() {
 		gapBotApi.NewFormObjectSelect("gender", "gender", options),
 		gapBotApi.NewFormObjectSubmit("ارسال", "ارسال"),
 	)
-	//photo := gapBotApi.FilePath("/home/amiri/Pictures/background/216_20160615_1074822377.jpg")
-	//mPhoto := gapBotApi.NewPhoto(415661068, photo)
-	//mPhoto.Description = "my image background"
-	//fmt.Println(api.Send(mPhoto))
+	photo := gapBotApi.FilePath("/home/amiri/Pictures/background/216_20160615_1074822377.jpg")
+	mPhoto := gapBotApi.NewPhoto(415661068, photo)
+	mPhoto.Description = "my image background"
+	fmt.Println(api.Send(mPhoto))
 
-	//video := gapBotApi.FilePath("/home/amiri/Downloads/sample.json")
-	//mVideo := gapBotApi.NewFile(415661068, video)
-	//mVideo.Description = "sample json file"
-	//fmt.Println(api.Send(mVideo))
+	video := gapBotApi.FilePath("/home/amiri/Downloads/sample.json")
+	mVideo := gapBotApi.NewFile(415661068, video)
+	mVideo.Description = "sample json file"
+	fmt.Println(api.Send(mVideo))
 	fmt.Println(api.Send(msg))
 }

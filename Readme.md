@@ -119,4 +119,4 @@ func AcceptJoinRequest(botApi *gapBotApi.BotAPI, callback *gapBotApi.CallbackQue
 
 This project is licensed under the MIT License. This means you are free to use, modify, distribute, and incorporate this project in your own software, even for commercial purposes, as long as you include the original copyright notice and this license in any substantial portions of the software.
 
-The software is provided "as is", without warranty of any kind. For more details, refer to the LICENSE file.
+The software is provided "as is", without warranty of any kind. For more details, refer to the [LICENSE](./LICENSE) file.

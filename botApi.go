@@ -50,7 +50,7 @@ func NewBotAPIWithClient(token, apiEndpoint string, client HTTPClient) (*BotAPI,
 		shutdownChannel:      make(chan interface{}),
 		MessageHandlers:      make(MessageHandlers),
 		CallbackHandlers:     make(CallbackHandlers),
-		MiddlewareHandlers:   make(MiddlewareHandlers),
+		MiddlewareHandlers:   make(MiddlewareHandlers, 0),
 		apiEndpoint:          apiEndpoint,
 		DefaultTypesHandlers: make(map[string]MessageHandlerFunc),
 	}
@@ -303,7 +303,9 @@ func (bot *BotAPI) HandleMessage(statePath string, handler MessageHandlerFunc) {
 func (bot *BotAPI) HandleCallback(statePath string, handler CallbackHandlerFunc) {
 	bot.CallbackHandlers[statePath] = handler
 }
-
+func (bot *BotAPI) addMiddleware(handler MiddlewareHandlerFunc) {
+	bot.MiddlewareHandlers = append(bot.MiddlewareHandlers, handler)
+}
 func (bot *BotAPI) HandleUpdates(update []byte) (err error) {
 	var message Message
 	err = message.UnmarshalJson(update)

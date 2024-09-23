@@ -50,6 +50,7 @@ func NewBotAPIWithClient(token, apiEndpoint string, client HTTPClient) (*BotAPI,
 		shutdownChannel:      make(chan interface{}),
 		MessageHandlers:      make(MessageHandlers),
 		CallbackHandlers:     make(CallbackHandlers),
+		MiddlewareHandlers:   make(MiddlewareHandlers),
 		apiEndpoint:          apiEndpoint,
 		DefaultTypesHandlers: make(map[string]MessageHandlerFunc),
 	}

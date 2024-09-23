@@ -28,6 +28,7 @@ type BotAPI struct {
 	Client               HTTPClient `json:"-"`
 	MessageHandlers      MessageHandlers
 	CallbackHandlers     CallbackHandlers
+	MiddlewareHandlers   MiddlewareHandlers
 	shutdownChannel      chan interface{}
 	apiEndpoint          string
 	DefaultTypesHandlers map[string]MessageHandlerFunc
@@ -384,6 +385,7 @@ func (bot *BotAPI) HandleUpdates(update []byte) (err error) {
 		callbackData := message.CallbackQuery.QueryActin
 		message.CallbackQuery.ChatId = message.ChatID
 		message.CallbackQuery.UserId = message.From.Id
+		bot.runMiddlewares(&message)
 		handlerFunc := bot.FindCallbackHandler(callbackData.StatePath)
 		if handlerFunc != nil {
 			err = handlerFunc(bot, &message.CallbackQuery, callbackData.Params)
@@ -406,7 +408,7 @@ func (bot *BotAPI) HandleUpdates(update []byte) (err error) {
 	case MESSAGE_TYPE_LEAVE:
 		message.Text = "leave"
 	}
-
+	bot.runMiddlewares(&message)
 	handlerFunc := bot.FindMessageHandler(message.Text)
 	if handlerFunc != nil {
 		return handlerFunc(bot, &message)
@@ -426,4 +428,9 @@ func (bot *BotAPI) FindCallbackHandler(action string) CallbackHandlerFunc {
 
 func (bot *BotAPI) FindMessageHandler(action string) MessageHandlerFunc {
 	return bot.MessageHandlers[action]
+}
+func (bot *BotAPI) runMiddlewares(message *Message) {
+	for _, handlerFunc := range bot.MiddlewareHandlers {
+		handlerFunc(bot, message)
+	}
 }

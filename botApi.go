@@ -303,7 +303,7 @@ func (bot *BotAPI) HandleMessage(statePath string, handler MessageHandlerFunc) {
 func (bot *BotAPI) HandleCallback(statePath string, handler CallbackHandlerFunc) {
 	bot.CallbackHandlers[statePath] = handler
 }
-func (bot *BotAPI) addMiddleware(handler MiddlewareHandlerFunc) {
+func (bot *BotAPI) AddMiddleware(handler MiddlewareHandlerFunc) {
 	bot.MiddlewareHandlers = append(bot.MiddlewareHandlers, handler)
 }
 func (bot *BotAPI) HandleUpdates(update []byte) (err error) {

@@ -24,7 +24,7 @@ type (
 	User struct {
 		Id        int64  `json:"id,omitempty"`
 		UUId      string `json:"uu_id,omitempty"`
-		Username  string `json:"username,omitempty"`
+		Username  string `json:"user,omitempty"`
 		Name      string `json:"name,omitempty"`
 		IsDeleted bool   `json:"is_deleted,omitempty"`
 		//Avatar    string `json:"avatar"`

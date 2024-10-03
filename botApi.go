@@ -360,7 +360,14 @@ func (bot *BotAPI) HandleUpdates(update []byte) (err error) {
 		if err != nil {
 			return err
 		}
-		values, err := url.ParseQuery(message.FormData.RowData)
+		strVal := message.FormData.RowData
+		if strings.Contains(strVal, "?") {
+			strVals := strings.Split(strVal, "?")
+			if len(strVals) > 1 {
+				strVal = strVals[1]
+			}
+		}
+		values, err := url.ParseQuery(strVal)
 		if err != nil {
 			return err
 		}

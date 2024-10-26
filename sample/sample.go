@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/amirimatin/gapBotApi/v2"
 	"os"
 )
 

@@ -72,7 +72,7 @@ func (ctx *Ctx) Handlers() []Handler {
 				ctx.Params[k] = v
 			}
 		}
-		userState.Next = nil
+		//userState.Next = nil
 	}
 	ctx.Endpoint = endpoint
 	ctx.UserState = userState

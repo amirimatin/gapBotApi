@@ -239,8 +239,9 @@ func (ctx *Ctx) Bot() *BotAPI {
 	return ctx.bot
 }
 
-func (ctx *Ctx) WithParams(params map[string]interface{}) {
-	ctx.Params = params
+func (ctx *Ctx) WithParam(key string, val interface{}) *Ctx {
+	ctx.Params[key] = val
+	return ctx
 }
 
 func (ctx *Ctx) GetParam(key string) interface{} {

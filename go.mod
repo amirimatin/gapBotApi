@@ -1,4 +1,4 @@
-module github.com/amirimatin/gapBotApi
+module github.com/amirimatin/gapBotApi/v2
 
 go 1.23
 

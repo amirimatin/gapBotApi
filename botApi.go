@@ -2,9 +2,11 @@ package gapBotApi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/gofiber/fiber/v2"
 	"io"
 	"log"
 	"mime/multipart"
@@ -23,15 +25,15 @@ type HTTPClient interface {
 }
 
 type BotAPI struct {
-	Token                string     `json:"token"`
-	Debug                bool       `json:"debug"`
-	Client               HTTPClient `json:"-"`
-	MessageHandlers      MessageHandlers
-	CallbackHandlers     CallbackHandlers
-	MiddlewareHandlers   MiddlewareHandlers
-	shutdownChannel      chan interface{}
-	apiEndpoint          string
-	DefaultTypesHandlers map[string]MessageHandlerFunc
+	Token           string               `json:"token"`
+	Debug           bool                 `json:"debug"`
+	Client          HTTPClient           `json:"-"`
+	Handlers        map[string][]Handler `json:"-"`
+	Middlewares     []Handler            `json:"-"`
+	DefaultHandler  *Handler             `json:"-"`
+	userStats       map[int64]UserState
+	shutdownChannel chan interface{}
+	apiEndpoint     string
 }
 
 // NewBotAPI creates a new BotAPI instance.
@@ -41,23 +43,38 @@ func NewBotAPI(token string) (*BotAPI, error) {
 	return NewBotAPIWithClient(token, APIEndpoint, &http.Client{
 		Timeout: 30 * time.Second,
 	})
+
 }
 
 func NewBotAPIWithClient(token, apiEndpoint string, client HTTPClient) (*BotAPI, error) {
 	bot := &BotAPI{
-		Token:                token,
-		Client:               client,
-		shutdownChannel:      make(chan interface{}),
-		MessageHandlers:      make(MessageHandlers),
-		CallbackHandlers:     make(CallbackHandlers),
-		MiddlewareHandlers:   make(MiddlewareHandlers, 0),
-		apiEndpoint:          apiEndpoint,
-		DefaultTypesHandlers: make(map[string]MessageHandlerFunc),
+		Token:           token,
+		Client:          client,
+		shutdownChannel: make(chan interface{}),
+		Handlers:        make(map[string][]Handler),
+		Middlewares:     make([]Handler, 0),
+		userStats:       make(map[int64]UserState),
+		apiEndpoint:     apiEndpoint,
 	}
 	return bot, nil
 }
 
-// MakeRequest makes a request to a specific endpoint with our token.
+// GetHandlers makes a request to a specific Endpoint with our token.
+func (bot *BotAPI) GetHandlers(endpoint string) []Handler {
+	handlers := bot.Handlers[endpoint]
+	if handlers == nil {
+		return nil
+	}
+	return handlers
+}
+func (bot *BotAPI) Use(handler ...Handler) {
+	bot.Middlewares = append(bot.Middlewares, handler...)
+}
+
+func (bot *BotAPI) Handle(endpoint string, handler ...Handler) {
+	bot.Handlers[endpoint] = append(bot.Handlers[endpoint], handler...)
+}
+
 func (bot *BotAPI) MakeRequest(endpoint string, params Params) (*APIResponse, error) {
 	if bot.Debug {
 		log.Printf("Endpoint: %s, params: %v\n", endpoint, params)
@@ -151,7 +168,6 @@ func (bot *BotAPI) decodeUploadResponse(responseBody io.Reader, resp *UploadResp
 
 	return data, nil
 }
-
 func (bot *BotAPI) Request(c Chattable) (*APIResponse, error) {
 	params, err := c.params()
 	if err != nil {
@@ -183,7 +199,6 @@ func hasFileNeedingUpload(file RequestFile) bool {
 	}
 	return false
 }
-
 func (bot *BotAPI) UploadFile(params Params, file RequestFile) (*UploadResponse, error) {
 
 	w := &bytes.Buffer{}
@@ -272,9 +287,6 @@ func (bot *BotAPI) UploadFile(params Params, file RequestFile) (*UploadResponse,
 
 	return &apiResp, nil
 }
-
-// Send will send a Chattable item to Telegram and provides the
-// returned Message.
 func (bot *BotAPI) Send(c Chattable) (Message, error) {
 	resp, err := bot.Request(c)
 	if err != nil {
@@ -296,151 +308,52 @@ func (bot *BotAPI) Send(c Chattable) (Message, error) {
 	}
 	return msg, err
 }
-
-func (bot *BotAPI) HandleMessage(statePath string, handler MessageHandlerFunc) {
-	bot.MessageHandlers[statePath] = handler
-}
-func (bot *BotAPI) HandleCallback(statePath string, handler CallbackHandlerFunc) {
-	bot.CallbackHandlers[statePath] = handler
-}
-func (bot *BotAPI) AddMiddleware(handler MiddlewareHandlerFunc) {
-	bot.MiddlewareHandlers = append(bot.MiddlewareHandlers, handler)
-}
 func (bot *BotAPI) HandleUpdates(update []byte) (err error) {
-	var message Message
-	err = message.UnmarshalJson(update)
+	ctx := Ctx{
+		bot:          bot,
+		Message:      &Message{},
+		Context:      context.Background(),
+		HandlerIndex: 0,
+	}
+	err = ctx.Unmarshal(update)
 	if err != nil {
 		return err
 	}
-	switch message.Type {
-	case MESSAGE_TYPE_TEXT:
-		message.Text = message.Data
-	case MESSAGE_TYPE_IMAGE:
-		err := json.Unmarshal([]byte(message.Data), &message.Photo)
-		if err != nil {
-			return err
-		}
-	case MESSAGE_TYPE_VIDEO:
-		err := json.Unmarshal([]byte(message.Data), &message.Video)
-		if err != nil {
-			return err
-		}
-	case MESSAGE_TYPE_FILE:
-		err := json.Unmarshal([]byte(message.Data), &message.File)
-		if err != nil {
-			return err
-		}
-	case MESSAGE_TYPE_AUDIO:
-		err := json.Unmarshal([]byte(message.Data), &message.Audio)
-		if err != nil {
-			return err
-		}
-	case MESSAGE_TYPE_VOICE:
-		err := json.Unmarshal([]byte(message.Data), &message.Voice)
-		if err != nil {
-			return err
-		}
-	case MESSAGE_TYPE_LOCATION:
-		err := json.Unmarshal([]byte(message.Data), &message.Location)
-		if err != nil {
-			return err
-		}
-	case MESSAGE_TYPE_CONTACT:
-		err := json.Unmarshal([]byte(message.Data), &message.Contact)
-		if err != nil {
-			return err
-		}
-	case MESSAGE_TYPE_PAY_CALLBACK:
-		err := json.Unmarshal([]byte(message.Data), &message.PaymentInfo)
-		if err != nil {
-			return err
-		}
-	case MESSAGE_TYPE_SUBMITFORM:
-		err := json.Unmarshal([]byte(message.Data), &message.FormData)
-		if err != nil {
-			return err
-		}
-		strVal := message.FormData.RowData
-		if strings.Contains(strVal, "?") {
-			strVals := strings.Split(strVal, "?")
-			if len(strVals) > 1 {
-				strVal = strVals[1]
-			}
-		}
-		values, err := url.ParseQuery(strVal)
-		if err != nil {
-			return err
-		}
-
-		result := make(map[string]string)
-		for key, val := range values {
-			if len(val) > 0 {
-				result[key] = val[0]
-			}
-		}
-		message.FormData.Data = result
-	case MESSAGE_TYPE_TRIGGER_BUTTON:
-		err := json.Unmarshal([]byte(message.Data), &message.CallbackQuery)
-		if err != nil {
-			fmt.Println(err.Error())
-			return err
-		}
-
-		err = json.Unmarshal([]byte(message.CallbackQuery.Data), &message.CallbackQuery.QueryActin)
-		if err != nil {
-			fmt.Println(err.Error())
-			return err
-		}
-		message.MessageID = message.CallbackQuery.MessageID
-		callbackData := message.CallbackQuery.QueryActin
-		message.CallbackQuery.ChatId = message.ChatID
-		message.CallbackQuery.UserId = message.From.Id
-		bot.runMiddlewares(&message)
-		handlerFunc := bot.FindCallbackHandler(callbackData.StatePath)
-		if handlerFunc != nil {
-			err = handlerFunc(bot, &message.CallbackQuery, callbackData.Params)
-			if err != nil {
-				_, err = bot.Send(NewAnswerCallback(message.ChatID, message.CallbackQuery.CallbackId, err.Error(), false))
-				if err != nil {
-					fmt.Printf("error in sending callback answer: %s", err.Error())
-					return err
-				}
-			}
-		} else {
-			_, err := bot.Send(NewAnswerCallback(message.ChatID, message.CallbackQuery.CallbackId, "Invalid Callback Data", false))
-			if err != nil {
-				fmt.Printf("error in sending callback answer: %s", err.Error())
-				return err
-			}
-		}
-	case MESSAGE_TYPE_JOIN:
-		message.Text = "join"
-	case MESSAGE_TYPE_LEAVE:
-		message.Text = "leave"
-	}
-	bot.runMiddlewares(&message)
-	handlerFunc := bot.FindMessageHandler(message.Text)
-	if handlerFunc != nil {
-		return handlerFunc(bot, &message)
-	}
-	defaultHandler := bot.DefaultTypesHandlers[string(message.Type)]
-	if defaultHandler != nil {
-		err := defaultHandler(bot, &message)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+	return ctx.Next()
 }
-func (bot *BotAPI) FindCallbackHandler(action string) CallbackHandlerFunc {
-	return bot.CallbackHandlers[action]
-}
+func (bot *BotAPI) Serve(port int, callbackEndpoint string) {
+	app := fiber.New(fiber.Config{
+		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
+			code := fiber.StatusInternalServerError
+			var e *fiber.Error
+			if errors.As(err, &e) {
+				code = e.Code
+			}
+			return ctx.Status(code).JSON(fiber.Map{
+				"status": "error",
+				"error":  err,
+			})
+		},
+		AppName: "Gap Authenticator",
+	})
 
-func (bot *BotAPI) FindMessageHandler(action string) MessageHandlerFunc {
-	return bot.MessageHandlers[action]
-}
-func (bot *BotAPI) runMiddlewares(message *Message) {
-	for _, handlerFunc := range bot.MiddlewareHandlers {
-		handlerFunc(bot, message)
+	bot.Handle("/back", func(ctx *Ctx) error {
+		return ctx.Back()
+	})
+
+	app.Post(callbackEndpoint, func(ctx *fiber.Ctx) error {
+		err := bot.HandleUpdates(ctx.Body())
+		if err != nil {
+			fmt.Printf("error in handle updates: %s", err.Error())
+		}
+		return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+			"status": "success",
+			"data":   nil,
+		})
+	})
+
+	err := app.Listen(fmt.Sprintf(":%v", port))
+	if err != nil {
+		panic(err)
 	}
 }

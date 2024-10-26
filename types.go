@@ -1,18 +1,8 @@
 package gapBotApi
 
 type (
-	MessageHandlers    map[string]MessageHandlerFunc
-	CallbackHandlers   map[string]CallbackHandlerFunc
-	MiddlewareHandlers []MiddlewareHandlerFunc
-
-	MessageHandlerFunc    func(botApi *BotAPI, message *Message) error
-	CallbackHandlerFunc   func(botApi *BotAPI, callback *CallbackQuery, params map[string]string) error
-	MiddlewareHandlerFunc func(botApi *BotAPI, message *Message)
-
 	CallbackQuery struct {
-		ChatId     int64               `json:"-"`
 		MessageID  int64               `json:"message_id"`
-		UserId     int64               `json:"user_id"`
 		Data       string              `json:"data"`
 		QueryActin CallbackQueryAction `json:"-"`
 		CallbackId string              `json:"callback_id"`

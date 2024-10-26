@@ -7,7 +7,7 @@ import (
 
 // Telegram constants
 const (
-	// APIEndpoint is the endpoint for all API methods,
+	// APIEndpoint is the Endpoint for all API methods,
 	// with formatting for Sprintf.
 	APIEndpoint = "https://api.gap.im/%s"
 )

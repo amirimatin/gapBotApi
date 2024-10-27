@@ -12,6 +12,7 @@ func main() {
 		fmt.Println(err.Error())
 		return
 	}
+
 	api.Handle("/test", func(ctx *gapBotApi.Ctx) error {
 		msg := gapBotApi.NewMessage(ctx.Message.ChatID, "hi you can start")
 		msg.InlineKeyboardMarkup = gapBotApi.NewInlineKeyboardMarkup(gapBotApi.NewInlineKeyboardRow(
@@ -121,8 +122,8 @@ func main() {
 		fmt.Println(err, send)
 		return nil
 	})
-	api.Serve(3900, "/bot/callback")
-	//msg := gapBotApi.NewMessage(418705986, "sample messageHandler")
+
+	//msg := gapBotApi.NewMessage(433221574, "sample messageHandler")
 	//send, err := api.Send(msg)
 	//if err != nil {
 	//	fmt.Println(err.Error())
@@ -146,20 +147,25 @@ func main() {
 	//	gapBotApi.NewInlineKeyboardRow(gapBotApi.NewInlineKeyboardButtonURL("google.com", "https://google.com", gapBotApi.INLINE_KEYBOARD_URL_OPENIN_WEBVIEW_FULL)),
 	//	gapBotApi.NewInlineKeyboardRow(gapBotApi.NewInlineKeyboardButtonURL("google.com", "https://google.com", gapBotApi.INLINE_KEYBOARD_URL_OPENIN_WEBVIEW_WITH_HEADER)),
 	//	gapBotApi.NewInlineKeyboardRow(gapBotApi.NewInlineKeyboardButtonPayment("پرداخت کنید", 100, gapBotApi.INLINE_KEYBOARD_CURRENCY_IRR, "11454654sfdf5gv4d56144212", "همبنجوری الکی")))
-	//
+
 	//options := []gapBotApi.FormObjectOption{
 	//	{"male": "male"},
 	//	{"fmale": "fmale"},
 	//}
-
-	//photo := gapBotApi.FilePath("/home/amiri/Pictures/background/216_20160615_1074822377.jpg")
-	//mPhoto := gapBotApi.NewPhoto(415661068, photo)
-	//mPhoto.Description = "my image background"
-	//fmt.Println(api.Send(mPhoto))
 	//
-	//video := gapBotApi.FilePath("/home/amiri/Downloads/sample.json")
-	//mVideo := gapBotApi.NewFile(415661068, video)
-	//mVideo.Description = "sample json file"
+	photo := gapBotApi.FilePath("/home/amiri/Pictures/2bd57f01e8c8f40e05656954a2271799.jpg")
+	mPhoto := gapBotApi.NewFile(433221574, photo)
+	mPhoto.Description = "my image background"
+	fmt.Println(api.Send(mPhoto))
+	//
+	//video := gapBotApi.FilePath("/home/amiri/Pictures/5825830340513503652.mp4")
+	//mVideo := gapBotApi.NewVideo(433221574, video)
+	//mVideo.Description = "sample video file"
 	//fmt.Println(api.Send(mVideo))
 	//fmt.Println(api.Send(msg))
+
+	//fmt.Println(api.Send(msg))
+	//fmt.Println(api.Send(mVideo))
+	api.Serve(3900, "/bot/callback")
+
 }

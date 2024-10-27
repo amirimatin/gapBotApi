@@ -60,19 +60,23 @@ type (
 	}
 
 	File struct {
-		Id          int64     `json:"id,omitempty"`
-		SID         string    `json:"SID,omitempty"`
-		RoundVideo  bool      `json:"RoundVideo,omitempty"`
-		Extension   string    `json:"extension,omitempty"`
-		Filename    string    `json:"filename,omitempty"`
-		Filesize    int64     `json:"filesize,omitempty"`
-		Type        string    `json:"type,omitempty"`
-		Width       int64     `json:"width,omitempty"`
-		Height      int64     `json:"height,omitempty"`
-		Duration    float64   `json:"duration,omitempty"`
-		Desc        string    `json:"desc,omitempty"`
+		Id         int64   `json:"id,omitempty"`
+		SID        string  `json:"SID,omitempty"`
+		RoundVideo bool    `json:"RoundVideo,omitempty"`
+		Extension  string  `json:"extension,omitempty"`
+		Filename   string  `json:"filename,omitempty"`
+		Filesize   int64   `json:"filesize,omitempty"`
+		Type       string  `json:"type,omitempty"`
+		Width      int64   `json:"width,omitempty"`
+		Height     int64   `json:"height,omitempty"`
+		Duration   float64 `json:"duration,omitempty"`
+		//Desc        string    `json:"desc,omitempty"`
 		Path        string    `json:"path,omitempty"`
 		Screenshots ImageUrls `json:"image_urls,omitempty"`
+	}
+	FileDta struct {
+		File
+		Description string `json:"desc"`
 	}
 	FormData struct {
 		MessageID  int64             `json:"message_id"`

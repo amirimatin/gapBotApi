@@ -243,6 +243,7 @@ func (bot *BotAPI) HandleUpdates(update []byte) error {
 		Message:      &Message{},
 		Context:      context.Background(),
 		HandlerIndex: 0,
+		Params:       make(map[string]interface{}),
 	}
 	err := ctx.Unmarshal(update)
 	if err != nil {

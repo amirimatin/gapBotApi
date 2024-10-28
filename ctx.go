@@ -30,6 +30,24 @@ type (
 	}
 )
 
+func parseQuery(queryURL string) (map[string]interface{}, error) {
+	parsedURL, err := url.Parse(queryURL)
+	if err != nil {
+		return nil, err
+	}
+
+	queryParams := parsedURL.Query()
+	result := make(map[string]interface{})
+	for key, values := range queryParams {
+		if len(values) == 1 {
+			result[key] = values[0]
+		} else {
+			result[key] = values
+		}
+	}
+
+	return result, nil
+}
 func (ctx *Ctx) Handlers() []Handler {
 	handlers := make([]Handler, 0)
 	if ctx.Message == nil {
@@ -46,6 +64,13 @@ func (ctx *Ctx) Handlers() []Handler {
 		}
 	} else {
 		endpoint = ctx.Message.Text
+	}
+
+	query, err := parseQuery(endpoint)
+	if err == nil {
+		for k, v := range query {
+			ctx.WithParam(k, v)
+		}
 	}
 	handlers = append(handlers, ctx.bot.Handlers[endpoint]...)
 	var userState UserState

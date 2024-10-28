@@ -13,7 +13,7 @@ func main() {
 		return
 	}
 
-	api.Handle("/test", func(ctx *gapBotApi.Ctx) error {
+	api.Handle("/test", func(ctx *gapBotApi.Ctx) (gapBotApi.Message, error) {
 		msg := gapBotApi.NewMessage(ctx.Message.ChatID, "hi you can start")
 		msg.InlineKeyboardMarkup = gapBotApi.NewInlineKeyboardMarkup(gapBotApi.NewInlineKeyboardRow(
 			gapBotApi.NewInlineKeyboardButton("step one", gapBotApi.CallbackQueryAction{
@@ -21,22 +21,19 @@ func main() {
 				Params:    nil,
 			}),
 		))
-		send, err := api.Send(msg)
-		fmt.Println(err, send)
-		return nil
+		return api.Send(msg)
 	})
 
-	api.Handle("/answer", func(ctx *gapBotApi.Ctx) error {
+	api.Handle("/answer", func(ctx *gapBotApi.Ctx) (gapBotApi.Message, error) {
 		msg := gapBotApi.NewAnswerCallback(ctx.Message.ChatID, ctx.Message.CallbackQuery.CallbackId, "test with show alert = false", false)
 		ctx.Bot().Send(msg)
 		return ctx.Next()
-	}, func(ctx *gapBotApi.Ctx) error {
+	}, func(ctx *gapBotApi.Ctx) (gapBotApi.Message, error) {
 		msg := gapBotApi.NewAnswerCallback(ctx.Message.ChatID, ctx.Message.CallbackQuery.CallbackId, "test with show alert = true", true)
-		ctx.Bot().Send(msg)
-		return nil
+		return ctx.Bot().Send(msg)
 	})
 
-	api.Handle("/start", func(ctx *gapBotApi.Ctx) error {
+	api.Handle("/start", func(ctx *gapBotApi.Ctx) (gapBotApi.Message, error) {
 		msg := gapBotApi.NewMessage(ctx.Message.ChatID, "hi you can start")
 		msg.InlineKeyboardMarkup = gapBotApi.NewInlineKeyboardMarkup(gapBotApi.NewInlineKeyboardRow(
 			gapBotApi.NewInlineKeyboardButton("step one", gapBotApi.CallbackQueryAction{
@@ -44,12 +41,10 @@ func main() {
 				Params:    nil,
 			}),
 		))
-		send, err := api.Send(msg)
-		fmt.Println(err, send)
-		return nil
+		return api.Send(msg)
 	})
 
-	api.Handle("/start", func(ctx *gapBotApi.Ctx) error {
+	api.Handle("/start", func(ctx *gapBotApi.Ctx) (gapBotApi.Message, error) {
 		msg := gapBotApi.NewMessage(ctx.Message.ChatID, "hi you can start")
 		msg.InlineKeyboardMarkup = gapBotApi.NewInlineKeyboardMarkup(gapBotApi.NewInlineKeyboardRow(
 			gapBotApi.NewInlineKeyboardButton("step one", gapBotApi.CallbackQueryAction{
@@ -57,12 +52,10 @@ func main() {
 				Params:    nil,
 			}),
 		))
-		send, err := api.Send(msg)
-		fmt.Println(err, send)
-		return nil
+		return api.Send(msg)
 	})
 
-	api.Handle("/step1", func(ctx *gapBotApi.Ctx) error {
+	api.Handle("/step1", func(ctx *gapBotApi.Ctx) (gapBotApi.Message, error) {
 		msg := gapBotApi.NewMessage(ctx.Message.ChatID, "You in step one")
 		msg.InlineKeyboardMarkup = gapBotApi.NewInlineKeyboardMarkup(gapBotApi.NewInlineKeyboardRow(
 			gapBotApi.NewInlineKeyboardButton("step two", gapBotApi.CallbackQueryAction{
@@ -70,11 +63,9 @@ func main() {
 				Params:    nil,
 			}),
 		))
-		send, err := api.Send(msg)
-		fmt.Println(err, send)
-		return nil
+		return api.Send(msg)
 	})
-	api.Handle("/step2", func(ctx *gapBotApi.Ctx) error {
+	api.Handle("/step2", func(ctx *gapBotApi.Ctx) (gapBotApi.Message, error) {
 		msg := gapBotApi.NewMessage(ctx.Message.ChatID, "You in step two")
 		msg.InlineKeyboardMarkup = gapBotApi.NewInlineKeyboardMarkup(gapBotApi.NewInlineKeyboardRow(
 			gapBotApi.NewInlineKeyboardButton("step three", gapBotApi.CallbackQueryAction{
@@ -82,11 +73,9 @@ func main() {
 				Params:    nil,
 			}),
 		))
-		send, err := api.Send(msg)
-		fmt.Println(err, send)
-		return nil
+		return api.Send(msg)
 	})
-	api.Handle("/step3", func(ctx *gapBotApi.Ctx) error {
+	api.Handle("/step3", func(ctx *gapBotApi.Ctx) (gapBotApi.Message, error) {
 		msg := gapBotApi.NewMessage(ctx.Message.ChatID, "You in step three")
 		msg.InlineKeyboardMarkup = gapBotApi.NewInlineKeyboardMarkup(gapBotApi.NewInlineKeyboardRow(
 			gapBotApi.NewInlineKeyboardButton("step fore", gapBotApi.CallbackQueryAction{
@@ -94,11 +83,9 @@ func main() {
 				Params:    nil,
 			}),
 		))
-		send, err := api.Send(msg)
-		fmt.Println(err, send)
-		return nil
+		return api.Send(msg)
 	})
-	api.Handle("/step4", func(ctx *gapBotApi.Ctx) error {
+	api.Handle("/step4", func(ctx *gapBotApi.Ctx) (gapBotApi.Message, error) {
 		msg := gapBotApi.NewMessage(ctx.Message.ChatID, "You in step fore")
 		msg.InlineKeyboardMarkup = gapBotApi.NewInlineKeyboardMarkup(gapBotApi.NewInlineKeyboardRow(
 			gapBotApi.NewInlineKeyboardButton("step five", gapBotApi.CallbackQueryAction{
@@ -106,11 +93,9 @@ func main() {
 				Params:    nil,
 			}),
 		))
-		send, err := api.Send(msg)
-		fmt.Println(err, send)
-		return nil
+		return api.Send(msg)
 	})
-	api.Handle("/step5", func(ctx *gapBotApi.Ctx) error {
+	api.Handle("/step5", func(ctx *gapBotApi.Ctx) (gapBotApi.Message, error) {
 		msg := gapBotApi.NewMessage(ctx.Message.ChatID, "You in step five")
 		msg.InlineKeyboardMarkup = gapBotApi.NewInlineKeyboardMarkup(gapBotApi.NewInlineKeyboardRow(
 			gapBotApi.NewInlineKeyboardButton("Back", gapBotApi.CallbackQueryAction{
@@ -118,9 +103,7 @@ func main() {
 				Params:    nil,
 			}),
 		))
-		send, err := api.Send(msg)
-		fmt.Println(err, send)
-		return nil
+		return api.Send(msg)
 	})
 
 	//msg := gapBotApi.NewMessage(433221574, "sample messageHandler")

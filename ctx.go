@@ -9,7 +9,7 @@ import (
 )
 
 type (
-	Handler func(ctx *Ctx) error
+	Handler func(ctx *Ctx) (Message, error)
 	Ctx     struct {
 		bot      *BotAPI
 		Endpoint string
@@ -96,7 +96,7 @@ func (ctx *Ctx) ResetUserStack() {
 		}
 	}
 }
-func (ctx *Ctx) Back() error {
+func (ctx *Ctx) Back() (Message, error) {
 	if len(ctx.UserState.Stack) > 0 {
 		ctx.CleanState()
 		if len(ctx.UserState.Stack) > 0 {
@@ -109,7 +109,7 @@ func (ctx *Ctx) Back() error {
 			return previousCtx.Next()
 		}
 	}
-	return nil
+	return Message{}, nil
 }
 func (ctx *Ctx) CleanState() {
 	if userState, ok := ctx.bot.userStats[ctx.Message.From.Id]; ok && len(userState.Stack) > 0 {
@@ -119,7 +119,7 @@ func (ctx *Ctx) CleanState() {
 	}
 }
 
-func (ctx *Ctx) Next() error {
+func (ctx *Ctx) Next() (Message, error) {
 	handlers := ctx.Handlers()
 	if len(handlers) == 0 && ctx.bot.DefaultHandler != nil {
 		handlers = append(handlers, *ctx.bot.DefaultHandler)
@@ -135,7 +135,7 @@ func (ctx *Ctx) Next() error {
 			}
 		}
 	}
-	return nil
+	return Message{}, nil
 }
 
 func (ctx *Ctx) Unmarshal(update []byte) error {

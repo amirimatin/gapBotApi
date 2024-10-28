@@ -237,7 +237,7 @@ func (bot *BotAPI) Send(c Chattable) (Message, error) {
 	return msg, err
 }
 
-func (bot *BotAPI) HandleUpdates(update []byte) error {
+func (bot *BotAPI) HandleUpdates(update []byte) (Message, error) {
 	ctx := Ctx{
 		bot:          bot,
 		Message:      &Message{},
@@ -247,7 +247,7 @@ func (bot *BotAPI) HandleUpdates(update []byte) error {
 	}
 	err := ctx.Unmarshal(update)
 	if err != nil {
-		return err
+		return Message{}, err
 	}
 	return ctx.Next()
 }
@@ -268,12 +268,12 @@ func (bot *BotAPI) Serve(port int, callbackEndpoint string) {
 		AppName: "Gap Authenticator",
 	})
 
-	bot.Handle("/back", func(ctx *Ctx) error {
+	bot.Handle("/back", func(ctx *Ctx) (Message, error) {
 		return ctx.Back()
 	})
 
 	app.Post(callbackEndpoint, func(ctx *fiber.Ctx) error {
-		err := bot.HandleUpdates(ctx.Body())
+		_, err := bot.HandleUpdates(ctx.Body())
 		if err != nil {
 			fmt.Printf("error in handle updates: %s", err.Error())
 		}

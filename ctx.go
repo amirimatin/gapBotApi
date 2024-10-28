@@ -71,6 +71,8 @@ func (ctx *Ctx) Handlers() []Handler {
 		for k, v := range query {
 			ctx.WithParam(k, v)
 		}
+		parts := strings.Split(endpoint, "?")
+		endpoint = parts[0]
 	}
 	handlers = append(handlers, ctx.bot.Handlers[endpoint]...)
 	var userState UserState

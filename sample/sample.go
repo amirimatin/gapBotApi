@@ -152,12 +152,12 @@ func main() {
 	//	{"male": "male"},
 	//	{"fmale": "fmale"},
 	//}
-	//
-	photo := gapBotApi.FilePath("/home/amiri/Pictures/2bd57f01e8c8f40e05656954a2271799.jpg")
-	mPhoto := gapBotApi.NewFile(433221574, photo)
-	mPhoto.Description = "my image background"
-	fmt.Println(api.Send(mPhoto))
-	//
+	////
+	//photo := gapBotApi.FilePath("/home/amiri/Pictures/2bd57f01e8c8f40e05656954a2271799.jpg")
+	//mPhoto := gapBotApi.NewFile(433221574, photo)
+	//mPhoto.Description = "my image background"
+	//fmt.Println(api.Send(mPhoto))
+	////
 	//video := gapBotApi.FilePath("/home/amiri/Pictures/5825830340513503652.mp4")
 	//mVideo := gapBotApi.NewVideo(433221574, video)
 	//mVideo.Description = "sample video file"

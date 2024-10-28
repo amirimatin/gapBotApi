@@ -37,10 +37,14 @@ func (ctx *Ctx) Handlers() []Handler {
 	}
 
 	var endpoint string
-	switch ctx.Message.Type {
-	case MESSAGE_TYPE_TRIGGER_BUTTON:
+	if ctx.Message.Type == MESSAGE_TYPE_TRIGGER_BUTTON {
 		endpoint = ctx.Message.CallbackQuery.QueryActin.StatePath
-	default:
+		if ctx.Message.CallbackQuery.QueryActin.Params != nil {
+			for k, v := range ctx.Message.CallbackQuery.QueryActin.Params {
+				ctx.Params[k] = v
+			}
+		}
+	} else {
 		endpoint = ctx.Message.Text
 	}
 	handlers = append(handlers, ctx.bot.Handlers[endpoint]...)

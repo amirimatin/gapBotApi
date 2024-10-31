@@ -1,4 +1,4 @@
-package hiperText
+package hypertext
 
 import "fmt"
 
@@ -7,7 +7,7 @@ func Bold(str string) string {
 }
 
 func Italic(str string) string {
-	return fmt.Sprintf("<i>%s</i>", str)
+	return fmt.Sprintf("<i>%s</i>\n", str)
 }
 
 func UnderLine(str string) string {
@@ -17,8 +17,17 @@ func UnderLine(str string) string {
 func Specifies(str string) string {
 	return fmt.Sprintf("<s>%s</s>", str)
 }
+
+func InlineQuote(str string) string {
+	return fmt.Sprintf("`%s`", str)
+}
+
+func Quote(str string) string {
+	return fmt.Sprintf("```\n%s\n```", str)
+}
+
 func Colorize(str string, hexColor string) string {
-	return fmt.Sprintf("<color%s>%s</color>", hexColor, str)
+	return fmt.Sprintf("<color%s>%s</color>\n", hexColor, str)
 }
 func Enter() string {
 	return "\n"
@@ -31,8 +40,8 @@ func Tab() string {
 	return "\t"
 }
 func Line() string {
-	return "\n-----\n"
+	return "\n---------------\n"
 }
 func DoubleLine() string {
-	return "\n=====\n"
+	return "\n===============\n"
 }

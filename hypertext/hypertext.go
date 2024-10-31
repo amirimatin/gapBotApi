@@ -7,7 +7,7 @@ func Bold(str string) string {
 }
 
 func Italic(str string) string {
-	return fmt.Sprintf("<i>%s</i>\n", str)
+	return fmt.Sprintf("<i>%s</i>", str)
 }
 
 func UnderLine(str string) string {
@@ -27,7 +27,7 @@ func Quote(str string) string {
 }
 
 func Colorize(str string, hexColor string) string {
-	return fmt.Sprintf("<color%s>%s</color>\n", hexColor, str)
+	return fmt.Sprintf("<color%s>%s</color>", hexColor, str)
 }
 func Enter() string {
 	return "\n"

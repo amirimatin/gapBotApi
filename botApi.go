@@ -215,6 +215,18 @@ func (bot *BotAPI) UploadFile(params Params, file RequestFile) (*File, error) {
 	return nil, errors.New("no file to upload")
 }
 
+func (bot *BotAPI) MultiSend(chattables ...Chattable) ([]Message, []error) {
+	var messages []Message
+	var errors []error
+	for _, chattable := range chattables {
+		send, err := bot.Send(chattable)
+		if err != nil {
+			errors = append(errors, err)
+		}
+		messages = append(messages, send)
+	}
+	return messages, errors
+}
 func (bot *BotAPI) Send(c Chattable) (Message, error) {
 	resp, err := bot.Request(c)
 	if err != nil {

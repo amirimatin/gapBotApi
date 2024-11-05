@@ -149,7 +149,7 @@ func (ctx *Ctx) CleanState() {
 func (ctx *Ctx) Next() (Message, error) {
 	handlers := ctx.Handlers()
 	if len(handlers) == 0 && ctx.bot.DefaultHandler != nil {
-		handlers = append(handlers, *ctx.bot.DefaultHandler)
+		handlers = append(handlers, ctx.bot.DefaultHandler)
 	}
 
 	if len(handlers) > 0 {

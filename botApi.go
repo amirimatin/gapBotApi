@@ -24,7 +24,7 @@ type BotAPI struct {
 	Client          *resty.Client        `json:"-"`
 	Handlers        map[string][]Handler `json:"-"`
 	Middlewares     []Handler            `json:"-"`
-	DefaultHandler  *Handler             `json:"-"`
+	DefaultHandler  Handler              `json:"-"`
 	userStats       map[int64]UserState
 	shutdownChannel chan interface{}
 	apiEndpoint     string

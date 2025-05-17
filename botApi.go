@@ -19,15 +19,14 @@ import (
 
 // BotAPI structure with Resty client
 type BotAPI struct {
-	Token           string               `json:"token"`
-	Debug           bool                 `json:"debug"`
-	Client          *resty.Client        `json:"-"`
-	Handlers        map[string][]Handler `json:"-"`
-	Middlewares     []Handler            `json:"-"`
-	DefaultHandler  Handler              `json:"-"`
-	userStats       map[int64]UserState
-	shutdownChannel chan interface{}
-	apiEndpoint     string
+	Token          string               `json:"token"`
+	Debug          bool                 `json:"debug"`
+	Client         *resty.Client        `json:"-"`
+	Handlers       map[string][]Handler `json:"-"`
+	Middlewares    []Handler            `json:"-"`
+	DefaultHandler Handler              `json:"-"`
+	userStats      map[int64]UserState
+	apiEndpoint    string
 }
 
 // NewBotAPI creates a new BotAPI instance.
@@ -40,13 +39,12 @@ func NewBotAPIWithClient(token, apiEndpoint string, client *resty.Client) (*BotA
 	client.SetHeader("token", token)
 
 	bot := &BotAPI{
-		Token:           token,
-		Client:          client,
-		shutdownChannel: make(chan interface{}),
-		Handlers:        make(map[string][]Handler),
-		Middlewares:     make([]Handler, 0),
-		userStats:       make(map[int64]UserState),
-		apiEndpoint:     apiEndpoint,
+		Token:       token,
+		Client:      client,
+		Handlers:    make(map[string][]Handler),
+		Middlewares: make([]Handler, 0),
+		userStats:   make(map[int64]UserState),
+		apiEndpoint: apiEndpoint,
 	}
 	return bot, nil
 }

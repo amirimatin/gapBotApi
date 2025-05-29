@@ -1,0 +1,88 @@
+// params.go
+package params
+
+import (
+	"encoding/json"
+	"reflect"
+	"strconv"
+)
+
+type Params map[string]string
+
+func (p Params) AddNonEmpty(key, value string) {
+	if value != "" {
+		p[key] = value
+	}
+}
+
+func (p Params) AddNonZero(key string, value int) {
+	if value != 0 {
+		p[key] = strconv.Itoa(value)
+	}
+}
+
+func (p Params) AddNonZero64(key string, value int64) {
+	if value != 0 {
+		p[key] = strconv.FormatInt(value, 10)
+	}
+}
+
+func (p Params) AddBool(key string, value bool) {
+	if value {
+		p[key] = strconv.FormatBool(value)
+	}
+}
+
+func (p Params) AddNonZeroFloat(key string, value float64) {
+	if value != 0 {
+		p[key] = strconv.FormatFloat(value, 'f', 6, 64)
+	}
+}
+
+func (p Params) AddInterface(key string, value interface{}) error {
+	if value == nil || (reflect.ValueOf(value).Kind() == reflect.Ptr && reflect.ValueOf(value).IsNil()) {
+		return nil
+	}
+	b, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+	p[key] = string(b)
+	return nil
+}
+
+func (p Params) AddFirstValid(key string, args ...interface{}) error {
+	for _, arg := range args {
+		switch v := arg.(type) {
+		case int:
+			if v != 0 {
+				p[key] = strconv.Itoa(v)
+				return nil
+			}
+		case int64:
+			if v != 0 {
+				p[key] = strconv.FormatInt(v, 10)
+				return nil
+			}
+		case string:
+			if v != "" {
+				p[key] = v
+				return nil
+			}
+		case nil:
+			continue
+		default:
+			b, err := json.Marshal(arg)
+			if err != nil {
+				return err
+			}
+			p[key] = string(b)
+			return nil
+		}
+	}
+	return nil
+}
+
+func (p Params) GetParam(key string) string {
+	return p[key]
+}
